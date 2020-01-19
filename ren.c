@@ -42,7 +42,7 @@ void display(void)
 
   }
   glEnd(); // ポリゴンの描画終了
-  glFlush();
+  glFlush();//まだ実行されていない命令をすべて実行
 }
 
 
