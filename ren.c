@@ -6,6 +6,9 @@
 //#define M_PI 3.141592 // 円周率
 #define PART 100 // 分割数
 
+static GLfloat ang = 0.0;
+
+
 void display(void)
 {
   int i, n = PART;
@@ -13,6 +16,11 @@ void display(void)
   double rate;
   glClear(GL_COLOR_BUFFER_BIT); // ウィンドウの背景をglClearColor()で指定された色で塗りつぶす
   glColor3f(1.0, 1.0, 0.0); // 描画物体に白色を設定
+  
+  glPushMatrix();
+    glRotatef(ang, 0.0, 0.0, 1.0);
+//    glRectf( -12.0, -15.0, 15.0, 15.0 );
+
   glBegin(GL_POLYGON); // ポリゴンの描画
  
   // 円を描画
@@ -42,33 +50,52 @@ void display(void)
 
   }
   glEnd(); // ポリゴンの描画終了
-  glFlush();//まだ実行されていない命令をすべて実行
+//  glFlush();//まだ実行されていない命令をすべて実行
+//  glPopMatrix();
+  glutSwapBuffers();//図形表記に必要
+}
+
+void simu(void)
+{
+  ang = ang + 1.0;
+  if ( ang > 360.0)
+    ang = ang - 360.0;
+    glutPostRedisplay();
+
 }
 
 
-void init(char *name)
+
+
+void init(void)
 {
-  int width = 400, height = 400; // ウィンドウサイズ
-  int w_window = glutGet(GLUT_SCREEN_WIDTH), h_window = glutGet(GLUT_SCREEN_HEIGHT); // デスクトップのサイズ
-  int w_mid = (w_window-width)/2, h_mid = (h_window-height)/2; // デスクトップの中央座標
-  glutInitWindowPosition(w_mid, h_mid);
-  glutInitWindowSize(width, height);
-  glutInitDisplayMode(GLUT_RGBA); // 色の指定にRGBAモードを使用
-  glutCreateWindow(name);
-  glClearColor(0.0, 0.0, 0.0, 1.0); // ウィンドウの背景色の指定
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0); // 座標系を設定(平行投影)
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+
+  glShadeModel(GL_FLAT);
 }
 
 
-int main(int argc, char **argv)
+void Keyboard(unsigned char key, int x, int y)
 {
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(1000, 1000);
+  if ( key == 'a') {
+    exit(0);
+  } else if(key == 'b'){
+    glutIdleFunc(simu);
+  }
+}
 
-	glutInit(&argc, argv); // glutの初期化
- 	init(argv[0]);
+
+int main(int argc, char *argv[])
+{
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+
+	glutInitWindowPosition( 250,250);//ウィンドウの位置
+	glutInitWindowSize(500, 500);//ウィンドウのサイズ
+
+  glutCreateWindow(argv[0]);
+ 	init();
+  glutKeyboardFunc(Keyboard);
  	glutDisplayFunc(display); // ディスプレイコールバック関数の指定
 	glutMainLoop(); // イベント待ちループ
   return 0;
